@@ -18,14 +18,5 @@
     "repo": "https://github.com/Caspian404/comp-security-project",
     "image": "/images/student-system.svg",
     "localSetup": "DEMO LOGIN: admin@university.edu / Admin123!. Backend runs on https://localhost:3001."
-  },
-  {
-    "id": 3,
-    "title": "Portfolio Website",
-    "description": "A modern, responsive portfolio website built with React and Node.js. Features a dark theme with gradient accents, animated backgrounds, and a clean UI for showcasing projects.",
-    "tech": ["React", "Vite", "Node.js", "Express", "Bootstrap"],
-    "url": "http://localhost:5173",
-    "repo": "https://github.com/Caspian404/Portfolio_Website",
-    "image": "/images/portfolio.svg"
   }
 ]

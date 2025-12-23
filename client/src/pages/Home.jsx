@@ -45,9 +45,12 @@ export default function Home() {
           </div>
           <div className="tech-stack mt-5 pt-4">
             <p className="text-secondary mb-3" style={{fontSize: '0.85rem'}}>Technologies I work with</p>
-            <div className="d-flex gap-3 justify-content-center flex-wrap">
-              {['React', 'Angular', 'Node.js', 'PHP', 'MySQL', 'Python'].map(tech => (
-                <span key={tech} className="badge" style={{fontSize: '0.85rem', padding: '0.5em 1em'}}>
+            <div
+              className="d-flex flex-wrap justify-content-center gap-2"
+              style={{ maxWidth: '700px', margin: '0 auto' }}
+            >
+              {['React', 'Angular', 'Node.js', 'PHP', 'MySQL', 'Bash', 'Git', 'Jira', 'Postman', 'Docker', 'Oracle Cloud', 'Google Workspace'].map(tech => (
+                <span key={tech} className="badge text-wrap text-break" style={{fontSize: '0.85rem', padding: '0.5em 1em'}}>
                   {tech}
                 </span>
               ))}

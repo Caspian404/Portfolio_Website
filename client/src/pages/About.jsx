@@ -41,10 +41,13 @@ export default function About() {
   };
 
   const skills = [
-    { category: 'Frontend', items: ['React', 'Angular', 'JavaScript', 'Bootstrap', 'HTML/CSS'] },
-    { category: 'Backend', items: ['Node.js', 'Express', 'PHP', 'MySQL', 'Python'] },
-    { category: 'Security & Tools', items: ['JWT', 'SSL/TLS', 'Git', 'MVC Architecture'] },
-  ];
+  { category: 'Frontend', items: ['React', 'Angular', 'JavaScript', 'HTML', 'CSS', 'Bootstrap'] },
+  { category: 'Backend', items: ['Node.js', 'Express', 'PHP', 'MySQL', 'Python'] },
+  { category: 'Security', items: ['JWT', 'TLS/SSL', 'Authentication & Authorization', 'Rate Limiting', 'reCAPTCHA'] },
+  { category: 'Systems & Infrastructure', items: ['Linux (Oracle Linux 9)', 'Bash', 'SSH', 'systemd', 'Docker', 'Nginx', 'WireGuard'] },
+  { category: 'Tools & Practices', items: ['Git', 'GitHub', 'MVC Architecture'] }
+];
+
 
   return (
     <main>
@@ -55,8 +58,8 @@ export default function About() {
               <div className="about-image-wrapper position-relative">
                 <div className="about-image-bg"></div>
                 <div className="about-avatar d-flex align-items-center justify-content-center" 
-                     style={{width: '280px', height: '280px', borderRadius: '24px', background: 'var(--bg-card)', border: '1px solid var(--border-color)', margin: '0 auto'}}>
-                  <span style={{fontSize: '6rem'}}>👨‍💻</span>
+                  style={{width: '280px', height: '280px', borderRadius: '24px', background: 'var(--bg-card)', border: '1px solid var(--border-color)', margin: '0 auto', overflow: 'hidden'}}>
+                  <img src="../../public/images/profile.JPG" alt="Kevin Hagstrom" style={{width: '100%', height: '100%', objectFit: 'cover'}} />
                 </div>
               </div>
             </div>
@@ -67,14 +70,13 @@ export default function About() {
               <h1 className="display-5 fw-bold mb-4">
                 Hi, I'm <span style={{background: 'var(--gradient-1)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}}>Kevin Hagstrom</span>
               </h1>
-              <p className="lead" style={{color: 'var(--text-secondary)'}}>
-                I'm a Computer Science student passionate about building secure, scalable web applications. 
-                With experience in full-stack development, I focus on creating solutions that are both functional and user-friendly.
+              <p className="lead" style={{ color: 'var(--text-secondary)' }}>
+                I’m a Computer Science graduate focused on building secure, scalable web applications.
+                With full-stack experience, I develop solutions that balance reliability, performance, and user experience.
+                I’m also interested in cloud systems and have built projects using Google Workspace and Oracle Cloud.
+                I graduated from the University of Wisconsin–Eau Claire in December 2025 with my B.S. in Computer Science and a minor in Mathematics and am currently seeking employment opportunities in Minnesota and Wisconsin.
               </p>
-              <p style={{color: 'var(--text-secondary)'}}>
-                My projects range from inventory management systems to secure student information platforms, 
-                demonstrating expertise in authentication, database design, and modern web frameworks.
-              </p>
+
               <div className="d-flex gap-3 mt-4 flex-wrap">
                 <a href="https://github.com/Caspian404" target="_blank" rel="noreferrer" className="btn btn-outline-light">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16" className="me-2">
@@ -117,18 +119,6 @@ export default function About() {
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      <section className="py-5">
-        <div className="container text-center">
-          <h2 className="h2 fw-bold mb-3">Let's Work Together</h2>
-          <p className="text-secondary mb-4" style={{maxWidth: '500px', margin: '0 auto'}}>
-            Have a project in mind? I'd love to hear about it. Let's create something amazing together.
-          </p>
-          <button onClick={() => setShowModal(true)} className="btn btn-primary btn-lg px-5">
-            Get In Touch
-          </button>
         </div>
       </section>
 

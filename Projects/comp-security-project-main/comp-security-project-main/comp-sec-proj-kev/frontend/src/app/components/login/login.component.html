@@ -1,0 +1,79 @@
+<div class="login-container">
+  <div class="login-box">
+    <div class="login-header">
+      <div class="logo-container"></div>
+      <p>Please sign in to continue</p>
+    </div>
+
+    <div *ngIf="errorMessage" class="error-banner">
+      {{ errorMessage }}
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <div class="input-wrapper">
+          <i class="fas fa-envelope"></i>
+          <input 
+            type="email" 
+            id="email" 
+            formControlName="email" 
+            placeholder="Enter your email"
+            [class.error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+          >
+        </div>
+        <div class="error-message" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+          <span *ngIf="loginForm.get('email')?.errors?.['required']">Email is required</span>
+          <span *ngIf="loginForm.get('email')?.errors?.['email']">Please enter a valid email</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="input-wrapper">
+          <i class="fas fa-lock"></i>
+          <input 
+            type="password" 
+            id="password" 
+            formControlName="password" 
+            placeholder="Enter your password"
+            [class.error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+          >
+        </div>
+        <div class="error-message" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+          <span *ngIf="loginForm.get('password')?.errors?.['required']">Password is required</span>
+        </div>
+      </div>
+<!-- CAPTCHA SECTION -->
+<div class="form-group">
+  <label>Verification Check</label>
+  
+  <!-- Google reCAPTCHA v2 Widget - Explicit Rendering -->
+  <div id="recaptcha-container"></div>
+  
+  <div class="error-message" *ngIf="recaptchaError">
+    {{ recaptchaError }}
+  </div>
+</div>
+
+<!--
+      <div class="form-options">
+        <label class="remember-me">
+          <input type="checkbox"> Remember me
+        </label>
+        <a href="#" class="forgot-password">Forgot Password?</a>
+      </div>
+-->
+
+      <button type="submit" [disabled]="loginForm.invalid || isLoading" class="login-button">
+        <span *ngIf="!isLoading">Sign In</span>
+        <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
+      </button>
+      
+      <div class="admin-note">
+        <p>🔐 Account creation is restricted to administrators only.</p>
+        <p>Please contact your system administrator to create an account.</p>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,327 @@
+<div class="student-dashboard">
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="navbar-content">
+      <div class="navbar-brand">
+        <span class="logo">🎓</span>
+        <span>Student Portal</span>
+      </div>
+      <div class="navbar-user">
+        <span class="welcome-text">Welcome, {{ studentProfile?.first_name }} {{ studentProfile?.last_name }}</span>
+        <button class="btn btn-secondary" (click)="logout()">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="container">
+      <!-- Alert Messages -->
+      <div *ngIf="errorMessage" class="alert alert-error">
+        {{ errorMessage }}
+      </div>
+      <div *ngIf="successMessage" class="alert alert-success">
+        {{ successMessage }}
+      </div>
+
+      <!-- Tab Navigation -->
+      <div class="tab-navigation">
+        <button 
+          class="tab-button" 
+          [class.active]="activeTab === 'overview'"
+          (click)="setActiveTab('overview')"
+        >
+          📊 Overview
+        </button>
+        <button 
+          class="tab-button" 
+          [class.active]="activeTab === 'profile'"
+          (click)="setActiveTab('profile')"
+        >
+          👤 Profile
+        </button>
+        <button 
+          class="tab-button" 
+          [class.active]="activeTab === 'academic'"
+          (click)="setActiveTab('academic')"
+        >
+          📚 Academic
+        </button>
+        <button 
+          class="tab-button" 
+          [class.active]="activeTab === 'balance'"
+          (click)="setActiveTab('balance')"
+        >
+          💰 Balance
+        </button>
+        <button 
+          class="tab-button" 
+          [class.active]="activeTab === 'transactions'"
+          (click)="setActiveTab('transactions')"
+        >
+          📜 Transactions
+        </button>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="tab-content">
+        <!-- Overview Tab -->
+        <div *ngIf="activeTab === 'overview'" class="tab-panel">
+          <div class="dashboard-grid">
+            <div class="stat-card">
+              <div class="stat-icon">👤</div>
+              <div class="stat-content">
+                <h3>Student ID</h3>
+                <p class="stat-value">{{ studentProfile?.bluegold_id }}</p>
+              </div>
+            </div>
+            
+            <div class="stat-card">
+              <div class="stat-icon">📊</div>
+              <div class="stat-content">
+                <h3>Current GPA</h3>
+                <p class="stat-value">{{ formatGPA(academicInfo?.gpa) }}</p>
+              </div>
+            </div>
+            
+            <div class="stat-card">
+              <div class="stat-icon">📚</div>
+              <div class="stat-content">
+                <h3>Total Credits</h3>
+                <p class="stat-value">{{ academicInfo?.total_credits || 0 }}</p>
+              </div>
+            </div>
+            
+            <div class="stat-card">
+              <div class="stat-icon">💰</div>
+              <div class="stat-content">
+                <h3>Account Balance</h3>
+                <p class="stat-value" [class.negative]="(balanceInfo?.account_balance || 0) > 0">
+                  {{ formatCurrency(balanceInfo?.account_balance || 0) }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Profile Tab -->
+        <div *ngIf="activeTab === 'profile'" class="tab-panel">
+          <div class="card">
+            <div class="card-header">
+              <h3>Personal Information</h3>
+              <button 
+                *ngIf="!isEditingProfile" 
+                class="btn btn-primary" 
+                (click)="enableProfileEdit()"
+              >
+                ✏️ Edit Profile
+              </button>
+            </div>
+
+            <form [formGroup]="profileForm" (ngSubmit)="updateProfile()" class="profile-form">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="first_name">First Name</label>
+                  <input 
+                    type="text" 
+                    id="first_name" 
+                    formControlName="first_name" 
+                    [disabled]="!isEditingProfile"
+                    [class.error]="profileForm.get('first_name')?.invalid && profileForm.get('first_name')?.touched"
+                  >
+                  <div class="error-message" *ngIf="profileForm.get('first_name')?.invalid && profileForm.get('first_name')?.touched">
+                    <span *ngIf="profileForm.get('first_name')?.errors?.['required']">First name is required</span>
+                    <span *ngIf="profileForm.get('first_name')?.errors?.['minlength']">First name must be at least 2 characters</span>
+                    <span *ngIf="profileForm.get('first_name')?.errors?.['maxlength']">First name cannot exceed 50 characters</span>
+                    <span *ngIf="profileForm.get('first_name')?.errors?.['pattern']">First name can only contain letters, spaces, hyphens, and apostrophes</span>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="last_name">Last Name</label>
+                  <input 
+                    type="text" 
+                    id="last_name" 
+                    formControlName="last_name" 
+                    [disabled]="!isEditingProfile"
+                    [class.error]="profileForm.get('last_name')?.invalid && profileForm.get('last_name')?.touched"
+                  >
+                  <div class="error-message" *ngIf="profileForm.get('last_name')?.invalid && profileForm.get('last_name')?.touched">
+                    <span *ngIf="profileForm.get('last_name')?.errors?.['required']">Last name is required</span>
+                    <span *ngIf="profileForm.get('last_name')?.errors?.['minlength']">Last name must be at least 2 characters</span>
+                    <span *ngIf="profileForm.get('last_name')?.errors?.['maxlength']">Last name cannot exceed 50 characters</span>
+                    <span *ngIf="profileForm.get('last_name')?.errors?.['pattern']">Last name can only contain letters, spaces, hyphens, and apostrophes</span>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="email">Email</label>
+                  <input 
+                    type="email" 
+                    id="email" 
+                    [value]="studentProfile?.email" 
+                    disabled
+                  >
+                  <small>Email cannot be changed here</small>
+                </div>
+
+                <div class="form-group">
+                  <label for="phone_number">Phone Number</label>
+                  <input 
+                    type="tel" 
+                    id="phone_number" 
+                    formControlName="phone_number" 
+                    [disabled]="!isEditingProfile"
+                    placeholder="(555) 123-4567"
+                    [class.error]="profileForm.get('phone_number')?.invalid && profileForm.get('phone_number')?.touched"
+                  >
+                  <div class="error-message" *ngIf="profileForm.get('phone_number')?.invalid && profileForm.get('phone_number')?.touched">
+                    <span *ngIf="profileForm.get('phone_number')?.errors?.['pattern']">Please enter a valid phone number (e.g., 555-123-4567)</span>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="address">Address</label>
+                  <input 
+                    type="text" 
+                    id="address" 
+                    formControlName="address" 
+                    [disabled]="!isEditingProfile"
+                    placeholder="123 Main St"
+                    [class.error]="profileForm.get('address')?.invalid && profileForm.get('address')?.touched"
+                  >
+                  <div class="error-message" *ngIf="profileForm.get('address')?.invalid && profileForm.get('address')?.touched">
+                    <span *ngIf="profileForm.get('address')?.errors?.['maxlength']">Address cannot exceed 200 characters</span>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="city">City</label>
+                  <input 
+                    type="text" 
+                    id="city" 
+                    formControlName="city" 
+                    [disabled]="!isEditingProfile"
+                    placeholder="Anytown"
+                    [class.error]="profileForm.get('city')?.invalid && profileForm.get('city')?.touched"
+                  >
+                  <div class="error-message" *ngIf="profileForm.get('city')?.invalid && profileForm.get('city')?.touched">
+                    <span *ngIf="profileForm.get('city')?.errors?.['maxlength']">City cannot exceed 100 characters</span>
+                    <span *ngIf="profileForm.get('city')?.errors?.['pattern']">City can only contain letters, spaces, hyphens, and apostrophes</span>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="state">State</label>
+                  <input 
+                    type="text" 
+                    id="state" 
+                    formControlName="state" 
+                    [disabled]="!isEditingProfile"
+                    placeholder="CA"
+                    maxlength="2"
+                    style="text-transform: uppercase"
+                    [class.error]="profileForm.get('state')?.invalid && profileForm.get('state')?.touched"
+                  >
+                  <div class="error-message" *ngIf="profileForm.get('state')?.invalid && profileForm.get('state')?.touched">
+                    <span *ngIf="profileForm.get('state')?.errors?.['pattern']">State must be a 2-letter code (e.g., CA, NY)</span>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="zip_code">Zip Code</label>
+                  <input 
+                    type="text" 
+                    id="zip_code" 
+                    formControlName="zip_code" 
+                    [disabled]="!isEditingProfile"
+                    placeholder="12345"
+                    [class.error]="profileForm.get('zip_code')?.invalid && profileForm.get('zip_code')?.touched"
+                  >
+                  <div class="error-message" *ngIf="profileForm.get('zip_code')?.invalid && profileForm.get('zip_code')?.touched">
+                    <span *ngIf="profileForm.get('zip_code')?.errors?.['pattern']">Please enter a valid zip code (e.g., 12345 or 12345-6789)</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-actions" *ngIf="isEditingProfile">
+                <button type="submit" class="btn btn-success" [disabled]="profileForm.invalid || isLoading">
+                  <span *ngIf="!isLoading">Save Changes</span>
+                  <span *ngIf="isLoading" class="loading-spinner"></span>
+                </button>
+                <button type="button" class="btn btn-secondary" (click)="cancelProfileEdit()">
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Academic Tab -->
+        <div *ngIf="activeTab === 'academic'" class="tab-panel">
+          <div class="card">
+            <h3>Academic Information</h3>
+            <div class="academic-info">
+              <div class="info-row">
+                <span class="info-label">Current GPA:</span>
+                <span class="info-value">{{ formatGPA(academicInfo?.gpa) }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Total Credits:</span>
+                <span class="info-value">{{ academicInfo?.total_credits || 0 }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Enrollment Date:</span>
+                <span class="info-value">{{ formatDate(studentProfile?.enrollment_date || '') }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Balance Tab -->
+        <div *ngIf="activeTab === 'balance'" class="tab-panel">
+          <div class="card">
+            <h3>Account Balance</h3>
+            <div class="balance-info">
+              <div class="balance-amount">
+                <span class="balance-label">Current Balance:</span>
+                <span class="balance-value">{{ formatCurrency(balanceInfo?.account_balance || 0) }}</span>
+              </div>
+              <div class="balance-status" [class.negative]="(balanceInfo?.account_balance || 0) > 0">
+                <span *ngIf="(balanceInfo?.account_balance || 0) > 0" class="status-warning">
+                  ⚠️ You have an outstanding balance
+                </span>
+                <span *ngIf="(balanceInfo?.account_balance || 0) === 0" class="status-good">
+                  ✅ Your account is paid in full
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Transactions Tab -->
+        <div *ngIf="activeTab === 'transactions'" class="tab-panel">
+          <div class="card">
+            <h3>Transaction History</h3>
+            <div class="transactions-list">
+              <div *ngIf="transactions.length === 0" class="no-transactions">
+                No transactions found
+              </div>
+              <div *ngFor="let transaction of transactions" class="transaction-item">
+                <div class="transaction-details">
+                  <div class="transaction-description">{{ transaction.description }}</div>
+                  <div class="transaction-date">{{ formatDate(transaction.created_at) }}</div>
+                </div>
+                <div class="transaction-amount">
+                  <span *ngIf="transaction.amount" class="amount" [class.negative]="transaction.amount > 0">
+                    {{ formatCurrency(transaction.amount) }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

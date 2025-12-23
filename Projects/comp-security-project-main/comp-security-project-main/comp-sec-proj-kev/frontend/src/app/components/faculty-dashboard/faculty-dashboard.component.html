@@ -1,0 +1,332 @@
+<div class="dashboard-container">
+  <nav class="navbar">
+    <div class="navbar-content">
+      <h2>Faculty Portal</h2>
+      <div class="nav-actions">
+        <button class="btn btn-outline" (click)="logout()">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="main-content">
+    <!-- Alert Messages -->
+    <div *ngIf="alert.show" class="alert alert-{{ alert.type }}">
+      {{ alert.message }}
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="tab-navigation">
+      <button 
+        class="tab-btn" 
+        [class.active]="activeTab === 'overview'" 
+        (click)="activeTab = 'overview'"
+      >
+        Overview
+      </button>
+      <button 
+        class="tab-btn" 
+        [class.active]="activeTab === 'students'" 
+        (click)="activeTab = 'students'"
+      >
+        Students
+      </button>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+      <!-- Overview Tab -->
+      <div *ngIf="activeTab === 'overview'" class="tab-panel">
+        <div class="dashboard-grid">
+          <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-content">
+              <h3>Total Students</h3>
+              <p class="stat-value">{{ students.length }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Quick Actions</h3>
+          <div class="quick-actions">
+            <button class="btn btn-primary" (click)="activeTab = 'students'; showCreateStudent()">
+              ➕ Create Student Account
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Students Tab -->
+      <div *ngIf="activeTab === 'students'" class="tab-panel">
+        <div class="card">
+          <h3>Student Management</h3>
+
+          <!-- Create Student Button -->
+          <div class="section-header">
+            <button class="btn btn-primary" (click)="showCreateStudent()">
+              ➕ Create Student Account
+            </button>
+          </div>
+
+          <!-- Search -->
+          <div class="search-section">
+            <div class="search-bar">
+              <span class="search-icon">🔍</span>
+              <input 
+                type="text" 
+                placeholder="Search students by name, email, or BlueGold ID..." 
+                [(ngModel)]="searchTerm"
+                (input)="filterStudents()"
+              >
+            </div>
+          </div>
+
+          <!-- Create Student Form -->
+          <div *ngIf="showCreateStudentForm" class="form-section">
+            <h4>Create New Student Account</h4>
+            <form [formGroup]="createStudentForm" (ngSubmit)="createStudent()" class="student-form">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="username">Username</label>
+                  <input type="text" id="username" formControlName="username" placeholder="e.g., jsmith123">
+                  <div class="error-message" *ngIf="createStudentForm.get('username')?.invalid && createStudentForm.get('username')?.touched">
+                    <span *ngIf="createStudentForm.get('username')?.errors?.['required']">Username is required</span>
+                    <span *ngIf="createStudentForm.get('username')?.errors?.['minlength']">Username must be at least 3 characters</span>
+                    <span *ngIf="createStudentForm.get('username')?.errors?.['maxlength']">Username cannot exceed 50 characters</span>
+                    <span *ngIf="createStudentForm.get('username')?.errors?.['pattern']">Username can only contain letters, numbers, underscores, and hyphens</span>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="email">Email</label>
+                  <input type="email" id="email" formControlName="email" placeholder="e.g., john.smith@university.edu">
+                  <div class="error-message" *ngIf="createStudentForm.get('email')?.invalid && createStudentForm.get('email')?.touched">
+                    <span *ngIf="createStudentForm.get('email')?.errors?.['required']">Email is required</span>
+                    <span *ngIf="createStudentForm.get('email')?.errors?.['email'] || createStudentForm.get('email')?.errors?.['pattern']">Please enter a valid email address</span>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="password">Password</label>
+                  <input type="password" id="password" formControlName="password" placeholder="Min 8 chars with uppercase, lowercase, number, & symbol">
+                  <div class="error-message" *ngIf="createStudentForm.get('password')?.invalid && createStudentForm.get('password')?.touched">
+                    <span *ngIf="createStudentForm.get('password')?.errors?.['required']">Password is required</span>
+                    <span *ngIf="createStudentForm.get('password')?.errors?.['minlength']">Password must be at least 8 characters</span>
+                    <span *ngIf="createStudentForm.get('password')?.errors?.['maxlength']">Password cannot exceed 128 characters</span>
+                    <span *ngIf="createStudentForm.get('password')?.errors?.['pattern']">Password must contain uppercase, lowercase, number, and special character (@$!%*?&)</span>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="bluegold_id">BlueGold ID</label>
+                  <input type="text" id="bluegold_id" formControlName="bluegold_id" placeholder="ABC123456" maxlength="10" style="text-transform: uppercase">
+                  <div class="error-message" *ngIf="createStudentForm.get('bluegold_id')?.invalid && createStudentForm.get('bluegold_id')?.touched">
+                    <span *ngIf="createStudentForm.get('bluegold_id')?.errors?.['required']">BlueGold ID is required</span>
+                    <span *ngIf="createStudentForm.get('bluegold_id')?.errors?.['pattern']">BlueGold ID must be 6-10 uppercase letters and numbers</span>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="first_name">First Name</label>
+                  <input type="text" id="first_name" formControlName="first_name" placeholder="e.g., John">
+                  <div class="error-message" *ngIf="createStudentForm.get('first_name')?.invalid && createStudentForm.get('first_name')?.touched">
+                    <span *ngIf="createStudentForm.get('first_name')?.errors?.['required']">First name is required</span>
+                    <span *ngIf="createStudentForm.get('first_name')?.errors?.['minlength']">First name must be at least 2 characters</span>
+                    <span *ngIf="createStudentForm.get('first_name')?.errors?.['maxlength']">First name cannot exceed 50 characters</span>
+                    <span *ngIf="createStudentForm.get('first_name')?.errors?.['pattern']">First name can only contain letters, spaces, hyphens, and apostrophes</span>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="last_name">Last Name</label>
+                  <input type="text" id="last_name" formControlName="last_name" placeholder="e.g., Smith">
+                  <div class="error-message" *ngIf="createStudentForm.get('last_name')?.invalid && createStudentForm.get('last_name')?.touched">
+                    <span *ngIf="createStudentForm.get('last_name')?.errors?.['required']">Last name is required</span>
+                    <span *ngIf="createStudentForm.get('last_name')?.errors?.['minlength']">Last name must be at least 2 characters</span>
+                    <span *ngIf="createStudentForm.get('last_name')?.errors?.['maxlength']">Last name cannot exceed 50 characters</span>
+                    <span *ngIf="createStudentForm.get('last_name')?.errors?.['pattern']">Last name can only contain letters, spaces, hyphens, and apostrophes</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn btn-success" [disabled]="createStudentForm.invalid || isLoading">
+                  <span *ngIf="!isLoading">Create Student</span>
+                  <span *ngIf="isLoading" class="loading-spinner"></span>
+                </button>
+                <button type="button" class="btn btn-secondary" (click)="cancelCreateStudent()">Cancel</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Students List -->
+          <div class="students-section">
+            <h4>Students ({{ filteredStudents.length }})</h4>
+            <div *ngIf="filteredStudents.length === 0" class="no-students">
+              No students found
+            </div>
+            <div *ngIf="filteredStudents.length > 0" class="students-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>BlueGold ID</th>
+                    <th>Email</th>
+                    <th>GPA</th>
+                    <th>Credits</th>
+                    <th>Balance</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr 
+                    *ngFor="let student of filteredStudents" 
+                    [class.selected]="selectedStudent?.id === student.id"
+                    (click)="selectStudent(student)"
+                  >
+                    <td class="student-name">{{ student.first_name }} {{ student.last_name }}</td>
+                    <td class="student-id">{{ student.bluegold_id }}</td>
+                    <td class="student-email">{{ student.email }}</td>
+                    <td class="student-gpa">{{ formatGPA(student.gpa) }}</td>
+                    <td class="student-credits">{{ student.total_credits || 0 }}</td>
+                    <td class="student-balance" [class.negative]="student.account_balance > 0">
+                      {{ formatCurrency(student.account_balance) }}
+                    </td>
+                    <td class="student-actions-cell">
+                      <button class="btn-small btn-edit" (click)="selectStudent(student); $event.stopPropagation()">
+                        ✏️ Edit
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Selected Student Details -->
+          <div *ngIf="selectedStudent" class="selected-student-section card">
+            <h4>📋 Selected Student: {{ selectedStudent.first_name }} {{ selectedStudent.last_name }}</h4>
+            <div class="student-info">
+              <p><strong>BlueGold ID:</strong> {{ selectedStudent.bluegold_id }}</p>
+              <p><strong>Email:</strong> {{ selectedStudent.email }}</p>
+              <p><strong>GPA:</strong> {{ formatGPA(selectedStudent.gpa) }}</p>
+              <p><strong>Credits:</strong> {{ selectedStudent.total_credits || 0 }}</p>
+              <p><strong>Account Balance:</strong> {{ formatCurrency(selectedStudent.account_balance || 0) }}</p>
+            </div>
+            
+            <!-- Student Actions -->
+            <div *ngIf="!showUpdateStudentForm && !showTuitionChargeForm" class="student-actions">
+              <button class="btn btn-primary" (click)="showUpdateStudent()">
+                ✏️ Update GPA/Credits/Balance
+              </button>
+              <button class="btn btn-primary" (click)="showTuitionCharge()">
+                💰 Charge Tuition
+              </button>
+            </div>
+            <div *ngIf="showUpdateStudentForm" class="form-section">
+              <h5>Update Student Information</h5>
+              <form [formGroup]="updateStudentForm" (ngSubmit)="updateStudent()" class="student-form">
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="gpa">GPA</label>
+                    <input type="number" id="gpa" formControlName="gpa" step="0.01" min="0" max="4">
+                    <div class="error-message" *ngIf="updateStudentForm.get('gpa')?.invalid && updateStudentForm.get('gpa')?.touched">
+                      GPA must be between 0 and 4
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="total_credits">Total Credits</label>
+                    <input type="number" id="total_credits" formControlName="total_credits" min="0">
+                    <div class="error-message" *ngIf="updateStudentForm.get('total_credits')?.invalid && updateStudentForm.get('total_credits')?.touched">
+                      Total credits must be 0 or greater
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="account_balance">Account Balance</label>
+                    <input type="number" id="account_balance" formControlName="account_balance" step="0.01" min="0">
+                    <div class="error-message" *ngIf="updateStudentForm.get('account_balance')?.invalid && updateStudentForm.get('account_balance')?.touched">
+                      Account balance must be 0 or greater
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-actions">
+                  <button type="submit" class="btn btn-success" [disabled]="updateStudentForm.invalid || isLoading">
+                    <span *ngIf="!isLoading">Update Student</span>
+                    <span *ngIf="isLoading" class="loading-spinner"></span>
+                  </button>
+                  <button type="button" class="btn btn-secondary" (click)="cancelUpdateStudent()">Cancel</button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Tuition Charge Form (inline in Students tab) -->
+            <div *ngIf="showTuitionChargeForm" class="form-section">
+              <h5>Charge Tuition</h5>
+              <form [formGroup]="tuitionChargeForm" (ngSubmit)="createTuitionCharge()" class="tuition-form">
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="amount">Amount ($)</label>
+                    <input type="number" id="amount" formControlName="amount" step="0.01" min="0.01" max="999999.99" placeholder="5000.00">
+                    <div class="error-message" *ngIf="tuitionChargeForm.get('amount')?.invalid && tuitionChargeForm.get('amount')?.touched">
+                      <span *ngIf="tuitionChargeForm.get('amount')?.errors?.['required']">Amount is required</span>
+                      <span *ngIf="tuitionChargeForm.get('amount')?.errors?.['min']">Amount must be at least $0.01</span>
+                      <span *ngIf="tuitionChargeForm.get('amount')?.errors?.['max']">Amount cannot exceed $999,999.99</span>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="description">Description</label>
+                    <input type="text" id="description" formControlName="description" placeholder="e.g., Fall 2024 Tuition" maxlength="500">
+                    <div class="error-message" *ngIf="tuitionChargeForm.get('description')?.invalid && tuitionChargeForm.get('description')?.touched">
+                      <span *ngIf="tuitionChargeForm.get('description')?.errors?.['maxlength']">Description cannot exceed 500 characters</span>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="due_date">Due Date (Optional)</label>
+                    <input type="date" id="due_date" formControlName="due_date">
+                  </div>
+                </div>
+
+                <div class="form-actions">
+                  <button type="submit" class="btn btn-success" [disabled]="isLoading">
+                    <span *ngIf="!isLoading">💰 Charge Tuition</span>
+                    <span *ngIf="isLoading" class="loading-spinner"></span>
+                  </button>
+                  <button type="button" class="btn btn-secondary" (click)="cancelTuitionCharge()" [disabled]="isLoading">Cancel</button>
+                </div>
+                <div style="margin-top: 0.5rem; font-size: 0.85rem; color: #666;">
+                  <p>Form Status: {{ tuitionChargeForm.valid ? '✅ Valid' : '❌ Invalid' }}</p>
+                </div>
+              </form>
+            </div>
+
+            <!-- Tuition Charges -->
+            <div *ngIf="tuitionCharges.length > 0" class="tuition-charges">
+              <h5>Tuition Charges</h5>
+              <div class="charges-list">
+                <div *ngFor="let charge of tuitionCharges" class="charge-item">
+                  <div class="charge-details">
+                    <div class="charge-amount">{{ formatCurrency(charge.amount) }}</div>
+                    <div class="charge-description">{{ charge.description || 'Tuition Charge' }}</div>
+                    <div class="charge-dates">
+                      Created: {{ formatDate(charge.created_at) }}
+                      <span *ngIf="charge.due_date"> | Due: {{ formatDate(charge.due_date) }}</span>
+                    </div>
+                  </div>
+                  <div class="charge-status" [style.color]="getChargeStatusColor(charge.status)">
+                    {{ charge.status.toUpperCase() }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

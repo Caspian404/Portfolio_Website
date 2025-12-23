@@ -1,0 +1,319 @@
+<div class="admin-dashboard">
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="navbar-content">
+      <div class="navbar-brand">
+        <span>Administrator Dashboard</span>
+      </div>
+      <div class="navbar-user">
+        <button class="btn btn-secondary" (click)="logout()">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="container">
+      <!-- Alert Messages -->
+      <div *ngIf="errorMessage" class="alert alert-error">
+        {{ errorMessage }}
+      </div>
+      <div *ngIf="successMessage" class="alert alert-success">
+        {{ successMessage }}
+      </div>
+
+      <!-- Tab Navigation -->
+      <div class="tab-navigation">
+        <button 
+          class="tab-button" 
+          [class.active]="activeTab === 'users'"
+          (click)="setActiveTab('users')"
+        >
+          👥 User Management
+        </button>
+        <button 
+          class="tab-button" 
+          [class.active]="activeTab === 'create'"
+          (click)="setActiveTab('create')"
+        >
+          ➕ Create User
+        </button>
+        <button 
+          class="tab-button" 
+          [class.active]="activeTab === 'password'"
+          (click)="setActiveTab('password')"
+        >
+          🔐 Change Password
+        </button>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="tab-content">
+        <!-- Users Management Tab -->
+        <div *ngIf="activeTab === 'users'" class="tab-panel">
+          <div class="card">
+            <div class="card-header">
+              <h3>User Management</h3>
+              <button class="btn btn-primary" (click)="setActiveTab('create')">
+                ➕ Create New User
+              </button>
+            </div>
+
+            <!-- Search -->
+            <div class="search-section">
+              <div class="search-bar">
+                <span class="search-icon">🔍</span>
+                <input 
+                  type="text" 
+                  placeholder="Search users by name, email, or BlueGold ID..." 
+                >
+              </div>
+            </div>
+
+            <!-- Users List -->
+            <div class="users-section">
+              <h4>Users ({{ users.length }})</h4>
+              <div *ngIf="users.length === 0" class="no-users">
+                No users found
+              </div>
+              <div class="users-list" *ngIf="users.length > 0">
+                <div class="list-header">
+                  <div class="col-name">Name</div>
+                  <div class="col-email">Email</div>
+                  <div class="col-role">Role</div>
+                  <div class="col-status">Status</div>
+                  <div class="col-actions">Actions</div>
+                </div>
+                <div 
+                  *ngFor="let user of users" 
+                  class="list-row"
+                  [class.editing]="editingStudent?.id === user.id"
+                >
+                  <div class="col-name">
+                    <span *ngIf="user.first_name && user.last_name">{{ user.first_name }} {{ user.last_name }}</span>
+                    <span *ngIf="!user.first_name || !user.last_name" class="no-name">—</span>
+                  </div>
+                  <div class="col-email">{{ user.email }}</div>
+                  <div class="col-role">{{ user.role }}</div>
+                  <div class="col-status">{{ user.is_active ? 'Active' : 'Inactive' }}</div>
+                  <div class="col-actions">
+                    <button 
+                      *ngIf="user.role === 'student' && editingStudent?.id !== user.id"
+                      class="btn btn-xs btn-secondary" 
+                      (click)="startEdit(user)"
+                      title="Edit Student"
+                    >
+                      ✏️
+                    </button>
+                    <button 
+                      *ngIf="user.role === 'student' && editingStudent?.id === user.id"
+                      class="btn btn-xs btn-success" 
+                      (click)="saveStudent()"
+                      [disabled]="isLoading"
+                      title="Save Changes"
+                    >
+                      💾
+                    </button>
+                    <button 
+                      *ngIf="user.role === 'student' && editingStudent?.id === user.id"
+                      class="btn btn-xs btn-secondary" 
+                      (click)="cancelEdit()"
+                      title="Cancel"
+                    >
+                      ❌
+                    </button>
+                    <button 
+                      *ngIf="user.id !== 1" 
+                      class="btn btn-xs btn-danger" 
+                      (click)="deleteUser(user)"
+                      title="Delete User"
+                      [disabled]="isLoading"
+                    >
+                      🗑️
+                    </button>
+                  </div>
+                  <!-- Expanded row for student details when editing -->
+                  <div class="expanded-row" *ngIf="editingStudent?.id === user.id && user.role === 'student'">
+                    <div class="expanded-content">
+                      <div class="detail-group">
+                        <label>GPA</label>
+                        <input 
+                          type="number" 
+                          formControlName="gpa"
+                          class="edit-input"
+                          step="0.01"
+                          min="0"
+                          max="4.0"
+                        >
+                      </div>
+                      <div class="detail-group">
+                        <label>Credits</label>
+                        <input 
+                          type="number" 
+                          formControlName="total_credits"
+                          class="edit-input"
+                          min="0"
+                        >
+                      </div>
+                      <div class="detail-group">
+                        <label>Balance</label>
+                        <input 
+                          type="number" 
+                          formControlName="account_balance"
+                          class="edit-input"
+                          step="0.01"
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Create User Tab -->
+        <div *ngIf="activeTab === 'create'" class="tab-panel">
+          <div class="card bright-card">
+            <h3>Create New User</h3>
+            <p>Create a new user account with specified role. Note: Student accounts will have full student records created.</p>
+            
+            <form [formGroup]="createUserForm" (ngSubmit)="createUser()" class="create-user-form">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="role">User Role *</label>
+                  <select id="role" formControlName="role" (change)="onRoleChange()">
+                    <option value="student">Student</option>
+                    <option value="faculty">Faculty</option>
+                    <option value="admin">Administrator</option>
+                  </select>
+                  <div class="error-message" *ngIf="createUserForm.get('role')?.invalid && createUserForm.get('role')?.touched">
+                    Role is required
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="username">Username *</label>
+                  <input type="text" id="username" formControlName="username" placeholder="e.g., jsmith123">
+                  <div class="error-message" *ngIf="createUserForm.get('username')?.invalid && createUserForm.get('username')?.touched">
+                    Username is required (min 3 characters)
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="email">Email *</label>
+                  <input type="email" id="email" formControlName="email" placeholder="e.g., john.smith@university.edu">
+                  <div class="error-message" *ngIf="createUserForm.get('email')?.invalid && createUserForm.get('email')?.touched">
+                    Valid email is required
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="password">Password *</label>
+                  <input type="password" id="password" formControlName="password" placeholder="Min 8 chars with uppercase, lowercase, number, & symbol">
+                  <div class="helper-text">Password must be 8+ characters and include uppercase, lowercase, number, and symbol.</div>
+                  <div class="error-message" *ngIf="createUserForm.get('password')?.invalid && createUserForm.get('password')?.touched">
+                    Password must be 8+ chars with uppercase, lowercase, number, and special character
+                  </div>
+                </div>
+
+                <div class="form-group" [class.required-fields]="createUserForm.get('role')?.value === 'student'" *ngIf="createUserForm.get('role')?.value === 'student'">
+                  <label for="bluegold_id">BlueGold ID *</label>
+                  <input type="text" id="bluegold_id" formControlName="bluegold_id" placeholder="e.g., ABC123456">
+                  <div class="error-message" *ngIf="createUserForm.get('bluegold_id')?.invalid && createUserForm.get('bluegold_id')?.touched">
+                    BlueGold ID is required
+                  </div>
+                </div>
+
+                <div class="form-group" [class.required-fields]="createUserForm.get('role')?.value === 'student' || createUserForm.get('role')?.value === 'faculty'">
+                  <label for="first_name">First Name <span *ngIf="createUserForm.get('role')?.value === 'student' || createUserForm.get('role')?.value === 'faculty'">*</span></label>
+                  <input type="text" id="first_name" formControlName="first_name" placeholder="e.g., John">
+                  <div class="error-message" *ngIf="createUserForm.get('first_name')?.invalid && createUserForm.get('first_name')?.touched">
+                    First name is required
+                  </div>
+                </div>
+
+                <div class="form-group" [class.required-fields]="createUserForm.get('role')?.value === 'student' || createUserForm.get('role')?.value === 'faculty'">
+                  <label for="last_name">Last Name <span *ngIf="createUserForm.get('role')?.value === 'student' || createUserForm.get('role')?.value === 'faculty'">*</span></label>
+                  <input type="text" id="last_name" formControlName="last_name" placeholder="e.g., Smith">
+                  <div class="error-message" *ngIf="createUserForm.get('last_name')?.invalid && createUserForm.get('last_name')?.touched">
+                    Last name is required
+                  </div>
+                </div>
+              </div>
+
+              <div class="role-info">
+                <div class="info-box" [class.active]="createUserForm.get('role')?.value === 'student'">
+                  <h4>👨‍🎓 Student Account</h4>
+                  <p>Creates a full student profile with academic records, account balance tracking, and access to student portal.</p>
+                </div>
+                <div class="info-box" [class.active]="createUserForm.get('role')?.value === 'faculty'">
+                  <h4>👨‍🏫 Faculty Account</h4>
+                  <p>Creates a faculty member with access to manage student records, charge tuition, and view academic information.</p>
+                </div>
+                <div class="info-box" [class.active]="createUserForm.get('role')?.value === 'admin'">
+                  <h4>👑 Administrator Account</h4>
+                  <p>Creates an admin user with full system access, user management capabilities, and administrative privileges.</p>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn btn-success" [disabled]="createUserForm.invalid || isLoading">
+                  <span *ngIf="!isLoading">Create User</span>
+                  <span *ngIf="isLoading" class="loading-spinner"></span>
+                </button>
+                <button type="button" class="btn btn-secondary" (click)="cancelCreateUser()">Reset Form</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Change Password Tab -->
+        <div *ngIf="activeTab === 'password'" class="tab-panel">
+          <div class="card bright-card">
+            <h3>Change Password</h3>
+            
+            <form [formGroup]="changePasswordForm" (ngSubmit)="changePassword()" class="change-password-form">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="currentPassword">Current Password *</label>
+                  <input type="password" id="currentPassword" formControlName="currentPassword">
+                  <div class="error-message" *ngIf="changePasswordForm.get('currentPassword')?.invalid && changePasswordForm.get('currentPassword')?.touched">
+                    Current password is required
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="newPassword">New Password *</label>
+                  <input type="password" id="newPassword" formControlName="newPassword">
+                  <div class="helper-text">Password must be 8+ characters and include uppercase, lowercase, number, and symbol.</div>
+                  <div class="error-message" *ngIf="changePasswordForm.get('newPassword')?.invalid && changePasswordForm.get('newPassword')?.touched">
+                    Password must be 8+ chars with uppercase, lowercase, number, and special character
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="confirmPassword">Confirm New Password *</label>
+                  <input type="password" id="confirmPassword" formControlName="confirmPassword">
+                  <div class="helper-text">Must match the new password exactly.</div>
+                  <div class="error-message" *ngIf="changePasswordForm.get('confirmPassword')?.invalid && changePasswordForm.get('confirmPassword')?.touched">
+                    <div *ngIf="changePasswordForm.get('confirmPassword')?.errors?.['required']">Please confirm your new password</div>
+                    <div *ngIf="changePasswordForm.get('confirmPassword')?.errors?.['passwordMismatch']">Passwords do not match</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn btn-success" [disabled]="changePasswordForm.invalid || isLoading">
+                  <span *ngIf="!isLoading">Change Password</span>
+                  <span *ngIf="isLoading" class="loading-spinner"></span>
+                </button>
+                <button type="button" class="btn btn-secondary" (click)="cancelChangePassword()">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

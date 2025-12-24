@@ -25,7 +25,6 @@
     "description": "I created my own VPN using wireguard and connected a client with smb file sharing enabled. This allowed me to access my files from any device with a VPN connection.",
     "tech": ["Wireguard", "Oracle Linux", "Bash", "SSH", "systemd", "Docker", "Nginx", "SMB"],
     "url": "../project.pdf",
-    "repo": "https://github.com/wg-easy/wg-easy",
     "image": "/images/Wireguard.png",
     "localSetup": ""
   }

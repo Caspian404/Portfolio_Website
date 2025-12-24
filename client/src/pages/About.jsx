@@ -74,7 +74,7 @@ export default function About() {
                 I’m a Computer Science graduate focused on building secure, scalable web applications.
                 With full-stack experience, I develop solutions that balance reliability, performance, and user experience.
                 I’m also interested in cloud systems and have built projects using Google Workspace and Oracle Cloud.
-                I graduated from the University of Wisconsin–Eau Claire in December 2025 with my B.S. in Computer Science and a minor in Mathematics and am currently seeking employment opportunities in Minnesota and Wisconsin.
+                I graduated from the University of Wisconsin–Eau Claire in December 2025 with my B.S. in Computer Science and a minor in Mathematics and am currently seeking remote employment opportunities or opportunities to work in Minnesota.
               </p>
 
               <div className="d-flex gap-3 mt-4 flex-wrap">

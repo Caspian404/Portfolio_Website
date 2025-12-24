@@ -20,7 +20,7 @@ export default function ProjectCard({ project }) {
         </div>
         <div className="mt-auto d-flex gap-2">
           <Link className="btn btn-outline-light btn-sm" to={`/projects/${project.id}`}>Details</Link>
-          {project.url && <a className="btn btn-outline-primary btn-sm" href={project.url} target="_blank" rel="noreferrer">Live</a>}
+          {project.url && <a className="btn btn-outline-primary btn-sm" href={project.url} target="_blank" rel="noreferrer">Demo</a>}
           {project.repo && <a className="btn btn-outline-secondary btn-sm" href={project.repo} target="_blank" rel="noreferrer">Repo</a>}
         </div>
       </div>

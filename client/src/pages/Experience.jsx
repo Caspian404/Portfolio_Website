@@ -34,7 +34,7 @@ export default function Experience() {
         'Wrote JavaScript test suites to detect regressions across product iterations.',
         'Improved test coverage and repeatability through automation best practices.'
       ],
-      tech: ['JavaScript', 'API Testing', 'Automation', 'Jira']
+      tech: ['JavaScript', 'API Testing', 'Automation', 'Jira', 'Mocha', 'Cypress']
     },
     {
       company: 'Aptive Environmental',

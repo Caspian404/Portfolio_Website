@@ -45,7 +45,7 @@ export default function About() {
   { category: 'Backend', items: ['Node.js', 'Express', 'PHP', 'MySQL', 'Python'] },
   { category: 'Security', items: ['JWT', 'TLS/SSL', 'Authentication & Authorization', 'Rate Limiting', 'reCAPTCHA'] },
   { category: 'Systems & Infrastructure', items: ['Linux (Oracle Linux 9)', 'Bash', 'SSH', 'systemd', 'Docker', 'Nginx', 'WireGuard'] },
-  { category: 'Tools & Practices', items: ['Git', 'GitHub', 'MVC Architecture'] }
+  { category: 'Tools & Practices', items: ['Git', 'GitHub', 'MVC Architecture', 'Cypress', 'Mocha'] }
 ];
 
 

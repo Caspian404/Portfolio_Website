@@ -48,7 +48,7 @@ export interface Transaction {
   providedIn: 'root'
 })
 export class StudentService {
-  private apiUrl = 'https://localhost:3001/api';
+  private apiUrl = 'https://localhost:3000/api';
 
   constructor(private http: HttpClient) {}
 

@@ -64,7 +64,7 @@ export interface CreateTuitionChargeRequest {
   providedIn: 'root'
 })
 export class FacultyService {
-  private apiUrl = 'https://localhost:3001/api';
+  private apiUrl = 'https://localhost:3000/api';
 
   constructor(private http: HttpClient) {}
 

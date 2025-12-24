@@ -15,7 +15,7 @@ interface User {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'https://localhost:3001/api';
+  private apiUrl = 'https://localhost:3000/api';
   private userSubject = new BehaviorSubject<User | null>(null);
   user$ = this.userSubject.asObservable();
 
